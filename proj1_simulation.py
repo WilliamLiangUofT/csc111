@@ -52,6 +52,11 @@ class AdventureGameSimulation:
         # TODO: Generate the remaining events based on the commands and initial location
         # Hint: Call self.generate_events with the appropriate arguments
 
+        self._events.first = Event(id_num=self._game.get_location().id_num,
+                                   description=self._game.get_location().brief_description)
+
+        self.generate_events(commands, self._game.get_location())
+
     def generate_events(self, commands: list[str], current_location: Location) -> None:
         """Generate all events in this simulation.
 
@@ -64,6 +69,15 @@ class AdventureGameSimulation:
         #  it to self._events.
         # Hint: current_location.available_commands[command] will return the next location ID
         # which executing <command> while in <current_location_id> leads to
+
+        for command in commands:
+            next_loc_id = current_location.available_commands[command]
+            next_location = self._game.get_location(next_loc_id) # Location object
+            new_event = Event(next_location.id_num, next_location.brief_description)
+
+            self._events.add_event(new_event, command)
+            current_location = next_loc_id
+
 
     def get_id_log(self) -> list[int]:
         """
@@ -110,16 +124,16 @@ if __name__ == "__main__":
     # })
 
     # TODO: Modify the code below to provide a walkthrough of commands needed to win and lose the game
-    win_walkthrough = []  # Create a list of all the commands needed to walk through your game to win it
+    win_walkthrough = ["Picked up Item Room Key", ]  # Create a list of all the commands needed to walk through your game to win it
     expected_log = []  # Update this log list to include the IDs of all locations that would be visited
     # Uncomment the line below to test your walkthrough
-    assert expected_log == AdventureGameSimulation('game_data.json', 1, win_walkthrough)
+    assert expected_log == AdventureGameSimulation('game_data.json', 1, win_walkthrough).get_id_log()
 
     # Create a list of all the commands needed to walk through your game to reach a 'game over' state
     lose_demo = []
     expected_log = []  # Update this log list to include the IDs of all locations that would be visited
     # Uncomment the line below to test your demo
-    assert expected_log == AdventureGameSimulation('game_data.json', 1, lose_demo)
+    assert expected_log == AdventureGameSimulation('game_data.json', 1, lose_demo).get_id_log()
 
     # TODO: Add code below to provide walkthroughs that show off certain features of the game
     # TODO: Create a list of commands involving visiting locations, picking up items, and then
